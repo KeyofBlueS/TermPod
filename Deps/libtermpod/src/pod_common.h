@@ -354,7 +354,7 @@ extern const char* pod_type_desc_str(pod_ident_type_t type);
 
 int pod_size_compare(const void* a, const void* b);
 /* create absolute/relative recursive directories */
-extern int mkdir_p(const char* pathname, mode_t mode);
+extern int mkdir_p(const char* dirname, const int mode);
 #ifdef __USE_ATFILE
 extern int mkdirat_p(int fd, const char* pathname, const mode_t mode);
 
