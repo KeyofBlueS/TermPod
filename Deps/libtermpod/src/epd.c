@@ -241,7 +241,7 @@ pod_file_epd_t* pod_file_epd_create(pod_string_t filename)
 	return pod_file;
 }
 
-bool pod_file_epd_add_entry(pod_file_epd_t* pod_file, pod_entry_epd_t* entry, pod_string_t filename, pod_byte_t* data)
+pod_entry_epd_t* pod_file_epd_add_entry(pod_file_epd_t* pod_file, pod_entry_epd_t* entry, pod_string_t filename, pod_byte_t* data)
 {
 	if (pod_file == NULL || entry == NULL || data == NULL)
 	{
@@ -283,7 +283,7 @@ bool pod_file_epd_add_entry(pod_file_epd_t* pod_file, pod_entry_epd_t* entry, po
 	return true;
 }
 
-bool pod_file_epd_del_entry(pod_file_epd_t* pod_file, pod_number_t entry_index)
+pod_entry_epd_t* pod_file_epd_del_entry(pod_file_epd_t* pod_file, pod_number_t entry_index)
 {
 	if (pod_file == NULL)
 	{
