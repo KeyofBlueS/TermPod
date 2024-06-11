@@ -285,7 +285,7 @@ pod_file_pod5_t* pod_file_pod5_create(pod_string_t filename)
 	return pod_file;
 }
 
-bool pod_file_pod5_add_entry(pod_file_pod5_t* pod_file, pod_entry_pod5_t* entry, pod_string_t filename, pod_byte_t* data)
+pod_file_pod5_t* pod_file_pod5_add_entry(pod_file_pod5_t* pod_file, pod_entry_pod5_t* entry, pod_string_t filename, pod_byte_t* data)
 {
 	if (pod_file == NULL || entry == NULL || data == NULL)
 	{
@@ -337,7 +337,7 @@ bool pod_file_pod5_add_entry(pod_file_pod5_t* pod_file, pod_entry_pod5_t* entry,
 	return true;
 }
 
-bool pod_file_pod5_del_entry(pod_file_pod5_t* pod_file, pod_number_t entry_index)
+pod_file_pod5_t* pod_file_pod5_del_entry(pod_file_pod5_t* pod_file, pod_number_t entry_index)
 {
 	if (pod_file == NULL)
 	{
