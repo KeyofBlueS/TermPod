@@ -67,7 +67,7 @@ set(INCLUDE_FILES
 set(EXAMPLE_SOURCE_FILES
 )
 
-add_subdirectory ("Deps/Libzip")
+add_subdirectory ("Deps/libzip")
 
 #pkg_search_module(ZIP REQUIRED libzip)
 #pkg_search_module(CRC REQUIRED libcrcle)
