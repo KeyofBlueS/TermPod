@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #ifdef _WIN32
 #include <Windows.h>
 #else
@@ -78,7 +79,6 @@ int mkdir_p(const char* dirname, const int mode)
     if (mkdir(dirname, mode) != 0) {
         if (errno != EEXIST) {
             ret = false;
-            break;
         }
     }
 #endif
