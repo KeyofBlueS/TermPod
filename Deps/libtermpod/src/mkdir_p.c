@@ -1,7 +1,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h> // Add this line
 #ifdef _WIN32
 #include <Windows.h>
 #else
@@ -18,22 +17,26 @@ int mkdir_p(const char* dirname, const int mode)
 {
     if (dirname == NULL) {
         return -1;
-    } else if (strcmp(dirname, ".") == 0) {
+	} else if (dirname == ".") {
         return 0;
     }
-    
-    char* p = strdup(dirname);
+    char* p;
+    char* temp;
     bool ret = true;
+    
+    temp = calloc(1, strlen(dirname) + 1);
+    p = strdup(dirname);
     
 #ifdef _WIN32
     /* Skip Windows drive letter. */
-    if (p != NULL && strchr(dirname, ':') != NULL) {
+    if ((p = strchr(dirname, ':')) != NULL) {
         p++;
     }
 #endif
 
-    if (p == NULL) {
-        return -1;
+    if (p == NULL || temp == NULL) {
+		free(temp);
+		return -1;
     }
 
     while ((p = strchr(p, SEP)) != NULL) {
@@ -45,14 +48,9 @@ int mkdir_p(const char* dirname, const int mode)
         }
         /* Put the path up to this point into a temporary to
            pass to the make directory function. */
-        char* temp = strdup(dirname);
-        if (temp == NULL) {
-            ret = false;
-            break;
-        }
+        memcpy(temp, dirname, p - dirname);
         temp[p - dirname] = '\0';
         p++;
-
 #ifdef _WIN32
         if (CreateDirectory(temp, NULL) == FALSE) {
             if (GetLastError() != ERROR_ALREADY_EXISTS) {
@@ -68,7 +66,6 @@ int mkdir_p(const char* dirname, const int mode)
             }
         }
 #endif
-        free(temp);
     }
 
 #ifdef _WIN32
@@ -81,10 +78,12 @@ int mkdir_p(const char* dirname, const int mode)
     if (mkdir(dirname, mode) != 0) {
         if (errno != EEXIST) {
             ret = false;
+            break;
         }
     }
 #endif
 
+    free(temp);
     free(p);
     return ret ? 0 : -1;
 }
