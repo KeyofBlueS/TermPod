@@ -1,9 +1,12 @@
 #include "pod_common.h"
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "zlib.h"
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(_WIN64)
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
 #include <io.h>
 #define opendir _open
 #define closedir _close
@@ -32,6 +35,10 @@ char* basename(const char* path)
 	}
 	return base;
 }
+#else // POSIX-based systems
+#include <dirent.h>
+#include <libgen.h>
+#include <unistd.h>
 
 #endif
 
@@ -204,15 +211,18 @@ pod_dir_t pod_opendir_mkdir_p(const pod_string_t path, mode_t* mode)
 		return NULL;
 	}
 
-	/* open canoncicalized_file_name as directory */
-       	pod_dir_t dst = opendir(dir, *mode);
+	/* open canonicalized file name as directory */
+	pod_dir_t dst = opendir(dir);
 	if(dst == NULL)
+	{
 		fprintf(stderr,"ERROR: opendir(\"%s\") failed with errno %s\n", dir, strerror(errno));
+	}
 
 	/* cleanup and return directory */
 	free(dir);
 	return dst;
 }
+
 
 pod_file_t pod_fopen_mkdir_p(pod_path_t path, const char* mode)
 {
