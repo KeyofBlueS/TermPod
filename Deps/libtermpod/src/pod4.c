@@ -286,7 +286,7 @@ pod_entry_pod4_t* pod_file_pod4_add_entry(pod_file_pod4_t* pod_file, pod_entry_p
 	if (pod_file == NULL || entry == NULL || data == NULL)
 	{
 		fprintf(stderr, "ERROR: pod_file, entry or data equals NULL!\n");
-		return false;
+		return NULL;
 	}
 
 	size_t new_entry_size = POD_DIR_ENTRY_POD4_SIZE;
@@ -296,7 +296,7 @@ pod_entry_pod4_t* pod_file_pod4_add_entry(pod_file_pod4_t* pod_file, pod_entry_p
 
 	void* new_data = realloc(pod_file->data, new_total_size);
 	if (!new_data) {
-		return false;
+		return NULL;
 	}
 	pod_file->data = new_data;
 
@@ -312,7 +312,7 @@ pod_entry_pod4_t* pod_file_pod4_add_entry(pod_file_pod4_t* pod_file, pod_entry_p
 	// re-allocate entries
 	void* new_entries = realloc(pod_file->entries, pod_file->header->file_count * new_entry_size);
 	if (!new_entries) {
-		return false;
+		return NULL;
 	}
 	pod_file->entries = new_entries;
 	// copy new entry data to end of entries
@@ -321,7 +321,7 @@ pod_entry_pod4_t* pod_file_pod4_add_entry(pod_file_pod4_t* pod_file, pod_entry_p
 	// re-allocate path_data
 	void* new_path_data = realloc(pod_file->path_data, pod_file->path_data_size + new_path_data_size);
 	if (!new_path_data) {
-		return false;
+		return NULL;
 	}
 	pod_file->path_data = new_path_data;
 	// copy new path data to end of path_data
@@ -330,7 +330,7 @@ pod_entry_pod4_t* pod_file_pod4_add_entry(pod_file_pod4_t* pod_file, pod_entry_p
 
 	//pod_file->checksum = pod_crc_pod4(pod_file);
 
-	return true;
+	return entry;
 }
 
 pod_entry_pod4_t* pod_file_pod4_del_entry(pod_file_pod4_t* pod_file, pod_number_t entry_index)
@@ -338,13 +338,13 @@ pod_entry_pod4_t* pod_file_pod4_del_entry(pod_file_pod4_t* pod_file, pod_number_
 	if (pod_file == NULL)
 	{
 		fprintf(stderr, "ERROR: pod_file_pod4_del_entry(pod_file == NULL)\n");
-		return false;
+		return NULL;
 	}
 
 	if (entry_index >= pod_file->header->file_count)
 	{
 		fprintf(stderr, "ERROR: pod_file_pod4_del_entry(entry_index >= pod_file->header->file_count)\n");
-		return false;
+		return NULL;
 	}
 
 	pod_entry_pod4_t* entry = &pod_file->entries[entry_index];
@@ -361,7 +361,7 @@ pod_entry_pod4_t* pod_file_pod4_del_entry(pod_file_pod4_t* pod_file, pod_number_
 
 	//pod_file->checksum = pod_crc_pod4(pod_file);
 
-	return true;
+	return entry;
 }
 
 pod_entry_pod4_t* pod_file_pod4_get_entry(pod_file_pod4_t* pod_file, pod_number_t entry_index)
