@@ -235,57 +235,92 @@ pod_file_type_t pod_file_merge(pod_file_type_t file, pod_file_type_t src) {
 	switch (pod_file_typeid(src))
 	{
 		case POD1:
-			for (int i = 0; i < src.pod1->header->file_count; i++)
-			{
+			for (int i = 0; i < src.pod1->header->file_count; i++) {
 				pod_entry_pod1_t* entry = &src.pod1->entries[i];
-				pod_file_entry_data_add(file, entry->name, file_count++, src.pod1->entry_data + entry->offset);
+				char filename[11];
+				int ret = snprintf(filename, sizeof(filename), "%u", file_count++);
+				if (ret < 0 || ret >= sizeof(filename)) {
+					fprintf(stderr, "Error: snprintf failed or output truncated for filename.\n");
+					continue;
+				}
+				pod_file_entry_data_add(file, entry->name, filename, src.pod1->entry_data + entry->offset);
 			}
 			break;
 		case POD2:
-			for (int i = 0; i < src.pod2->header->file_count; i++)
-			{
+			for (int i = 0; i < src.pod2->header->file_count; i++) {
 				pod_entry_pod2_t* entry = &src.pod2->entries[i];
 				pod_char_t* name = src.pod2->path_data + entry->path_offset;
-				pod_file_entry_data_add(file, name, file_count++, src.pod2->entry_data + entry->offset);
+				char filename[11];
+				int ret = snprintf(filename, sizeof(filename), "%u", file_count++);
+				if (ret < 0 || ret >= sizeof(filename)) {
+					fprintf(stderr, "Error: snprintf failed or output truncated for filename.\n");
+					continue;
+				}
+				pod_file_entry_data_add(file, name, filename, src.pod2->entry_data + entry->offset);
 			}
 			break;
 		case POD3:
-			for (int i = 0; i < src.pod3->header->file_count; i++)
-			{
+			for (int i = 0; i < src.pod3->header->file_count; i++) {
 				pod_entry_pod3_t* entry = &src.pod3->entries[i];
 				pod_char_t* name = src.pod3->path_data + entry->path_offset;
-				pod_file_entry_data_add(file, name, file_count++, src.pod3->entry_data + entry->offset);
+				char filename[11];
+				int ret = snprintf(filename, sizeof(filename), "%u", file_count++);
+				if (ret < 0 || ret >= sizeof(filename)) {
+					fprintf(stderr, "Error: snprintf failed or output truncated for filename.\n");
+					continue;
+				}
+				pod_file_entry_data_add(file, name, filename, src.pod3->entry_data + entry->offset);
 			}
 			break;
 		case POD4:
-			for (int i = 0; i < src.pod4->header->file_count; i++)
-			{
+			for (int i = 0; i < src.pod4->header->file_count; i++) {
 				pod_entry_pod4_t* entry = &src.pod4->entries[i];
 				pod_char_t* name = src.pod4->path_data + entry->path_offset;
-				pod_file_entry_data_add(file, name, file_count++, src.pod4->entry_data + entry->offset);
+				char filename[11];
+				int ret = snprintf(filename, sizeof(filename), "%u", file_count++);
+				if (ret < 0 || ret >= sizeof(filename)) {
+					fprintf(stderr, "Error: snprintf failed or output truncated for filename.\n");
+					continue;
+				}
+				pod_file_entry_data_add(file, name, filename, src.pod4->entry_data + entry->offset);
 			}
 			break;
 		case POD5:
-			for (int i = 0; i < src.pod5->header->file_count; i++)
-			{
+			for (int i = 0; i < src.pod5->header->file_count; i++) {
 				pod_entry_pod5_t* entry = &src.pod5->entries[i];
 				pod_char_t* name = src.pod5->path_data + entry->path_offset;
-				pod_file_entry_data_add(file, name, file_count++, src.pod5->entry_data + entry->offset);
+				char filename[11];
+				int ret = snprintf(filename, sizeof(filename), "%u", file_count++);
+				if (ret < 0 || ret >= sizeof(filename)) {
+					fprintf(stderr, "Error: snprintf failed or output truncated for filename.\n");
+					continue;
+				}
+				pod_file_entry_data_add(file, name, filename, src.pod5->entry_data + entry->offset);
 			}
 			break;
 		case POD6:
-			for (int i = 0; i < src.pod6->header->file_count; i++)
-			{
+			for (int i = 0; i < src.pod6->header->file_count; i++) {
 				pod_entry_pod6_t* entry = &src.pod6->entries[i];
 				pod_char_t* name = src.pod6->path_data + entry->path_offset;
-				pod_file_entry_data_add(file, name, file_count++, src.pod6->entry_data + entry->offset);
+				char filename[11];
+				int ret = snprintf(filename, sizeof(filename), "%u", file_count++);
+				if (ret < 0 || ret >= sizeof(filename)) {
+					fprintf(stderr, "Error: snprintf failed or output truncated for filename.\n");
+					continue;
+				}
+				pod_file_entry_data_add(file, name, filename, src.pod6->entry_data + entry->offset);
 			}
 			break;
 		case EPD:
-			for (int i = 0; i < src.epd->header->file_count; i++)
-			{
+			for (int i = 0; i < src.epd->header->file_count; i++) {
 				pod_entry_epd_t* entry = &src.epd->entries[i];
-				pod_file_entry_data_add(file, entry->name, file_count++, src.epd->entry_data + entry->offset);
+				char filename[11];
+				int ret = snprintf(filename, sizeof(filename), "%u", file_count++);
+				if (ret < 0 || ret >= sizeof(filename)) {
+					fprintf(stderr, "Error: snprintf failed or output truncated for filename.\n");
+					continue;
+				}
+				pod_file_entry_data_add(file, entry->name, filename, src.epd->entry_data + entry->offset);
 			}
 			break;
 		default:
@@ -549,25 +584,25 @@ pod_file_type_t  pod_file_entry_data_add(pod_file_type_t file, void* entry, pod_
 	switch (pod_file_typeid(file))
 	{
 		case POD1:
-			file.pod1 = pod_file_pod1_add_entry(file.pod1, entry, filename, data);
+			file.pod1 = (pod_file_pod1_t *)pod_file_pod1_add_entry(file.pod1, entry, filename, data);
 			break;
 		case POD2:
-			file.pod2 = pod_file_pod2_add_entry(file.pod2, entry, filename, data);
+			file.pod2 = (pod_file_pod2_t *)pod_file_pod2_add_entry(file.pod2, entry, filename, data);
 			break;
 		case POD3:
-			file.pod3 = pod_file_pod3_add_entry(file.pod3, entry, filename, data);
+			file.pod3 = (pod_file_pod3_t *)pod_file_pod3_add_entry(file.pod3, entry, filename, data);
 			break;
 		case POD4:
-			file.pod4 = pod_file_pod4_add_entry(file.pod4, entry, filename, data);
+			file.pod4 = (pod_file_pod4_t *)pod_file_pod4_add_entry(file.pod4, entry, filename, data);
 			break;
 		case POD5:
-			file.pod5 = pod_file_pod5_add_entry(file.pod5, entry, filename, data);
+			file.pod5 = (pod_file_pod5_t *)pod_file_pod5_add_entry(file.pod5, entry, filename, data);
 			break;
 		case POD6:
-			file.pod6 = pod_file_pod6_add_entry(file.pod6, entry, filename, data);
+			file.pod6 = (pod_file_pod6_t *)pod_file_pod6_add_entry(file.pod6, entry, filename, data);
 			break;
 		case EPD:
-			file.epd = pod_file_epd_add_entry(file.epd, entry, filename, data);
+			file.epd = (pod_file_epd_t *)pod_file_epd_add_entry(file.epd, entry, filename, data);
 			break;
 		default:
 			fprintf(stderr, "ERROR: pod_file_entry_data_add() unknown file format!\n");
@@ -579,25 +614,25 @@ pod_file_type_t  pod_file_entry_data_del(pod_file_type_t file, pod_number_t entr
 	switch (pod_file_typeid(file))
 	{
 		case POD1:
-			file.pod1 = pod_file_pod1_del_entry(file.pod1, entry_number);
+			file.pod1 = (pod_file_pod1_t *)pod_file_pod1_del_entry(file.pod1, entry_number);
 			break;
 		case POD2:
-			file.pod2 = pod_file_pod2_del_entry(file.pod2, entry_number);
+			file.pod2 = (pod_file_pod2_t *)pod_file_pod2_del_entry(file.pod2, entry_number);
 			break;
 		case POD3:
-			file.pod3 = pod_file_pod3_del_entry(file.pod3, entry_number);
+			file.pod3 = (pod_file_pod3_t *)pod_file_pod3_del_entry(file.pod3, entry_number);
 			break;
 		case POD4:
-			file.pod4 = pod_file_pod4_del_entry(file.pod4, entry_number);
+			file.pod4 = (pod_file_pod4_t *)pod_file_pod4_del_entry(file.pod4, entry_number);
 			break;
 		case POD5:
-			file.pod5 = pod_file_pod5_del_entry(file.pod5, entry_number);
+			file.pod5 = (pod_file_pod5_t *)pod_file_pod5_del_entry(file.pod5, entry_number);
 			break;
 		case POD6:
-			file.pod6 = pod_file_pod6_del_entry(file.pod6, entry_number);
+			file.pod6 = (pod_file_pod6_t *)pod_file_pod6_del_entry(file.pod6, entry_number);
 			break;
 		case EPD:
-			file.epd = pod_file_epd_del_entry(file.epd, entry_number);
+			file.epd = (pod_file_epd_t *)pod_file_epd_del_entry(file.epd, entry_number);
 			break;
 		default:
 			fprintf(stderr, "ERROR: pod_file_entry_data_del() unknown file format!\n");
