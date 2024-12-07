@@ -1,12 +1,24 @@
-﻿// TermPod.cpp : Defines the entry point for the application.
+// TermPod.cpp : Defines the entry point for the application.
 //
 
 #include "TermPod.h"
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
 
+//#include <iostream>
 #include <sstream>
 #include <iomanip>
+//#include <fstream>
+//#include <filesystem>
+#include <algorithm>
+//#include <sys/stat.h>
+//#include <vector>
+
+#ifdef _WIN32
+	#define WIN32_LEAN_AND_MEAN
+	#include <Windows.h>
+#else
+	#include <unistd.h>
+	#include <cstring>
+#endif
 
 extern "C" {
 #include <libtermpod.h>
@@ -90,7 +102,9 @@ Arguments parseArguments(int argc, char* argv[]) {
 
 int main(int argc, char* argv[])
 {
-	SetConsoleTitleA("TermPod (By Malte0621)");
+	#ifdef _WIN32
+		SetConsoleTitleA("TermPod (By Malte0621)");
+	#endif
 	fprintf(stderr, "TermPod (By Malte0621)\n");
 	
 	// Args override (for debug testing):
