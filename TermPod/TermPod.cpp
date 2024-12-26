@@ -370,7 +370,7 @@ int main(int argc, char* argv[])
 				}
 				break;
 			case POD6:
-				if (pod.pod6->size + data2_size >= 0x7FFFFFFF) {
+				if (pod.pod6->size + data2_size >= 0x77359400) {
 					fprintf(stderr, "Archive size exceeds 2GB limit! Saving & splitting archive.\n");
 					file_count = 0;
 					pods_count++;
@@ -379,7 +379,7 @@ int main(int argc, char* argv[])
 						fprintf(stderr, "Filename too long! Aborting.\n");
 						return 1;
 					}
-					if (pod.pod5->size >= 0x7FFFFFFF) {
+					if (pod.pod6->size >= 0x77359400) {
 						fprintf(stderr, "File '%s' size exceeds 2GB limit! Aborting.\n", name);
 						return 1;
 					}
