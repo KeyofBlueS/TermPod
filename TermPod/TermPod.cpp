@@ -1,4 +1,4 @@
-﻿// TermPod.cpp : Defines the entry point for the application.
+// TermPod.cpp : Defines the entry point for the application.
 //
 
 #include "TermPod.h"
@@ -7,6 +7,9 @@
 
 #include <sstream>
 #include <iomanip>
+#include <algorithm>
+#include <string>
+#include <filesystem>
 
 extern "C" {
 #include <libtermpod.h>
@@ -188,7 +191,13 @@ int main(int argc, char* argv[])
 			if (relative_path[0] == POD_PATH_SEPARATOR) {
 				relative_path = relative_path.substr(1);
 			}
-			
+
+			// Get the file extension using std::filesystem::path
+			std::filesystem::path file_path(relative_path);
+			std::string extension = file_path.extension().string();
+			// Convert to lowercase for case-insensitive comparison
+			std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+
 			std::ifstream file(path, std::ios::binary);
 			std::vector<char> buffer(std::istreambuf_iterator<char>(file), {});
 
@@ -285,7 +294,7 @@ int main(int argc, char* argv[])
 					};
 					break;
 				case POD6:
-					if (buffer.size() >= 1024) {
+					if (buffer.size() >= 1024 && extension != ".smp") {
 						if (buffer.size() >= 1024 * 4) compressionLevel = 8;
 						else if (buffer.size() >= 1024 * 2) compressionLevel = 4;
 						else if (buffer.size() >= 1024 * 1) compressionLevel = 2;
