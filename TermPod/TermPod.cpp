@@ -16,6 +16,8 @@ extern "C" {
 #include <libtermpod.h>
 }
 
+bool compression_pod6 = true;
+
 std::string to_format(const pod_ssize_t number) {
 	std::stringstream ss;
 	ss << std::setw(2) << std::setfill('0') << number;
@@ -33,6 +35,7 @@ void printHelp() {
 	fprintf(stderr, "-l, --list                        list files in POD/EPD archive\n");
 	fprintf(stderr, "-x, --extract                     extract files from POD/EPD archive\n");
 	fprintf(stderr, "-c, --create                      create POD/EPD archive\n");
+	fprintf(stderr, "--disable-compression-pod6        disable compression when creating a POD6 archive\n");
 	fprintf(stderr, "-p PATTERN, --pattern PATTERN\n");
 	fprintf(stderr, "                                  list/extract only the files matching specified pattern\n");
 }
@@ -43,6 +46,7 @@ struct Arguments {
 	bool list;
 	bool extract;
 	bool create;
+	bool compression_pod6;
 	std::string pattern;
 	std::string file;
 	std::string dir;
@@ -54,6 +58,7 @@ Arguments parseArguments(int argc, char* argv[]) {
 	args.list = false;
 	args.extract = false;
 	args.create = false;
+	args.compression_pod6 = true;
 	args.pattern = "";
 	args.file = "";
 	args.dir = "";
@@ -77,6 +82,9 @@ Arguments parseArguments(int argc, char* argv[]) {
 				args.pattern = argv[i + 1];
 				i++;
 			}
+		}
+		else if (arg == "--disable-compression-pod6") {
+			args.compression_pod6 = false;
 		}
 		else if (args.file.empty()) {
 			args.file = arg;
@@ -117,6 +125,9 @@ int main(int argc, char* argv[])
 		printHelp();
 		return 0;
 	}
+
+	// Update the global compression_pod6 variable based on the parsed arguments
+	compression_pod6 = args.compression_pod6;
 
 	if (args.list) {
 		fprintf(stderr, "List files in POD/EPD archive\n");
@@ -295,7 +306,7 @@ int main(int argc, char* argv[])
 					};
 					break;
 				case POD6:
-					if (buffer.size() >= 1024 && extension != ".smp") {
+					if (compression_pod6 && buffer.size() >= 1024 && extension != ".smp") {
 						if (buffer.size() >= 1024 * 4) compressionLevel = 8;
 						else if (buffer.size() >= 1024 * 2) compressionLevel = 4;
 						else if (buffer.size() >= 1024 * 1) compressionLevel = 2;
