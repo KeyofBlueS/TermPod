@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <string>
 #include <filesystem>
+#include <iostream>
 
 extern "C" {
 #include <libtermpod.h>
@@ -389,7 +390,8 @@ int main(int argc, char* argv[])
 			delete data2;
 			delete entry;
 
-			fprintf(stderr, "%s -> %s\n", path.c_str(), new_filename.c_str());
+			//fprintf(stderr, "%s -> %s\n", path.c_str(), new_filename.c_str());
+			std::cout << path << " -> " << new_filename << std::endl;
 			file_count++;
 		}
 		
