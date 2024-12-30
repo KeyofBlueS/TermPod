@@ -24,7 +24,7 @@
 #ifndef realpath
 #define realpath(path, resolved_path) _fullpath(resolved_path, path, PATH_MAX)
 #endif
-#include <BaseTsd.h>
+#include <basetsd.h>
 typedef SSIZE_T ssize_t;
 #define DIR void
 //typedef struct { int64_t val[2]; } quad_t;
