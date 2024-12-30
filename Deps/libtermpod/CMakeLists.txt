@@ -26,7 +26,7 @@ endif()
 if(WIN32)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 else()
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 endif()
 
 #set( CMAKE_C_STANDARD_REQUIRED ON )
