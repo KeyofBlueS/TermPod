@@ -2,27 +2,23 @@
 //
 
 #include "TermPod.h"
+#if defined(_WIN32)
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
 
-//#include <iostream>
 #include <sstream>
 #include <iomanip>
-//#include <fstream>
-//#include <filesystem>
 #include <algorithm>
-//#include <sys/stat.h>
-//#include <vector>
-
-#ifdef _WIN32
-	#define WIN32_LEAN_AND_MEAN
-	#include <Windows.h>
-#else
-	#include <unistd.h>
-	#include <cstring>
-#endif
+#include <string>
+#include <filesystem>
+#include <iostream>
 
 extern "C" {
 #include <libtermpod.h>
 }
+
+bool compression_pod6 = true;
 
 std::string to_format(const pod_ssize_t number) {
 	std::stringstream ss;
@@ -31,18 +27,22 @@ std::string to_format(const pod_ssize_t number) {
 }
 
 void printHelp() {
-	fprintf(stderr, "Usage: %s [-h] [-l | -x | -c | -p] file [dir]\n\n", "TermPod");
-	fprintf(stderr, "Pack/Unpack Terminal Reality POD and EPD archive files\n\n");
-	fprintf(stderr, "positional arguments:\n");
-	fprintf(stderr, "  file        input/output POD/EPD file\n");
-	fprintf(stderr, "  dir         input/output directory\n\n");
-	fprintf(stderr, "options:\n");
-	fprintf(stderr, "-h, --help                        show this help message and exit\n");
-	fprintf(stderr, "-l, --list                        list files in POD/EPD archive\n");
-	fprintf(stderr, "-x, --extract                     extract files from POD/EPD archive\n");
-	fprintf(stderr, "-c, --create                      create POD/EPD archive\n");
-	fprintf(stderr, "-p PATTERN, --pattern PATTERN\n");
-	fprintf(stderr, "                                  list/extract only the files matching specified pattern\n");
+	std::cerr << "Usage: " << "TermPod" << " [-h] [-l | -x | -c | -p] file [dir]" << std::endl;
+	std::cerr << std::endl;
+	std::cerr << "Pack/Unpack Terminal Reality POD and EPD archive files" << std::endl;
+	std::cerr << std::endl;
+	std::cerr << "positional arguments:" << std::endl;
+	std::cerr << "  file        input/output POD/EPD file" << std::endl;
+	std::cerr << "  dir         input/output directory" << std::endl;
+	std::cerr << std::endl;
+	std::cerr << "options:" << std::endl;
+	std::cerr << "-h, --help                        show this help message and exit" << std::endl;
+	std::cerr << "-l, --list                        list files in POD/EPD archive" << std::endl;
+	std::cerr << "-x, --extract                     extract files from POD/EPD archive" << std::endl;
+	std::cerr << "-c, --create                      create POD/EPD archive" << std::endl;
+	std::cerr << "--disable-compression-pod6        disable compression when creating a POD6 archive" << std::endl;
+	std::cerr << "-p PATTERN, --pattern PATTERN     list/extract only the files matching specified pattern" << std::endl;
+	std::cerr << std::endl;
 }
 
 // make a argument parser function
@@ -51,6 +51,7 @@ struct Arguments {
 	bool list;
 	bool extract;
 	bool create;
+	bool compression_pod6;
 	std::string pattern;
 	std::string file;
 	std::string dir;
@@ -62,6 +63,7 @@ Arguments parseArguments(int argc, char* argv[]) {
 	args.list = false;
 	args.extract = false;
 	args.create = false;
+	args.compression_pod6 = true;
 	args.pattern = "";
 	args.file = "";
 	args.dir = "";
@@ -86,6 +88,9 @@ Arguments parseArguments(int argc, char* argv[]) {
 				i++;
 			}
 		}
+		else if (arg == "--disable-compression-pod6") {
+			args.compression_pod6 = false;
+		}
 		else if (args.file.empty()) {
 			args.file = arg;
 		}
@@ -93,7 +98,7 @@ Arguments parseArguments(int argc, char* argv[]) {
 			args.dir = arg;
 		}
 		else {
-			fprintf(stderr, "TermPod: error: unrecognized arguments: %s\n", arg.c_str());
+			std::cerr << "TermPod: error: unrecognized arguments: " << arg << std::endl;
 		}
 	}
 
@@ -102,10 +107,10 @@ Arguments parseArguments(int argc, char* argv[]) {
 
 int main(int argc, char* argv[])
 {
-	#ifdef _WIN32
-		SetConsoleTitleA("TermPod (By Malte0621)");
-	#endif
-	fprintf(stderr, "TermPod (By Malte0621)\n");
+#if defined(_WIN32)
+	SetConsoleTitleA("TermPod (By Malte0621)");
+#endif
+	std::cout << "TermPod (By Malte0621)" << std::endl;
 	
 	// Args override (for debug testing):
 	//argc = 6;
@@ -117,7 +122,7 @@ int main(int argc, char* argv[])
 	
 	if (argc < 2) {
 		printHelp();
-		fprintf(stderr, "\nTermPod: error: the following arguments are required: file\n");
+		std::cerr << "TermPod: error: the following arguments are required: file" << std::endl;
 		return 1;
 	}
 
@@ -128,8 +133,11 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 
+	// Update the global compression_pod6 variable based on the parsed arguments
+	compression_pod6 = args.compression_pod6;
+
 	if (args.list) {
-		fprintf(stderr, "List files in POD/EPD archive\n");
+		std::cout << "List files in POD/EPD archive" << std::endl;
 		pod_file_type_t pod = pod_file_create((pod_path_t)args.file.c_str(), UNKNOWN);
 		if (!args.pattern.empty()) {
 			pod_file_print(pod, (pod_char_t*)args.pattern.c_str());
@@ -139,7 +147,7 @@ int main(int argc, char* argv[])
 		}
 	}
 	else if (args.extract) {
-		fprintf(stderr, "Extract files from POD/EPD archive\n");
+		std::cout << "Extract files from POD/EPD archive" << std::endl;
 		pod_file_type_t pod = pod_file_create((pod_path_t)args.file.c_str(), UNKNOWN);
 		if (!args.pattern.empty()) {
 			pod_file_extract(pod, (pod_char_t*)args.pattern.c_str(), (pod_path_t)args.dir.c_str());
@@ -149,7 +157,7 @@ int main(int argc, char* argv[])
 		}
 	}
 	else if (args.create) {
-		fprintf(stderr, "Create POD/EPD archive\n");
+		std::cout << "Create POD/EPD archive" << std::endl;
 		
 		pod_ident_type_t type;
 
@@ -168,11 +176,11 @@ int main(int argc, char* argv[])
 		else if (args.pattern == "EPD")
 			type = EPD;
 		else {
-			fprintf(stderr, "Invalid pattern (POD Version)\n");
+			std::cerr << "Invalid pattern (POD Version)" << std::endl;
 			return 1;
 		}
 
-		std::transform(args.file.begin(), args.file.end(), args.file.begin(), ::toupper);
+		//std::transform(args.file.begin(), args.file.end(), args.file.begin(), ::toupper);
 
 		std::string new_filename = args.file;
 		
@@ -202,7 +210,13 @@ int main(int argc, char* argv[])
 			if (relative_path[0] == POD_PATH_SEPARATOR) {
 				relative_path = relative_path.substr(1);
 			}
-			
+
+			// Get the file extension using std::filesystem::path
+			std::filesystem::path file_path(relative_path);
+			std::string extension = file_path.extension().string();
+			// Convert to lowercase for case-insensitive comparison
+			std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+
 			std::ifstream file(path, std::ios::binary);
 			std::vector<char> buffer(std::istreambuf_iterator<char>(file), {});
 
@@ -299,7 +313,7 @@ int main(int argc, char* argv[])
 					};
 					break;
 				case POD6:
-					if (buffer.size() >= 1024) {
+					if (compression_pod6 && buffer.size() >= 1024 && extension != ".smp") {
 						if (buffer.size() >= 1024 * 4) compressionLevel = 8;
 						else if (buffer.size() >= 1024 * 2) compressionLevel = 4;
 						else if (buffer.size() >= 1024 * 1) compressionLevel = 2;
@@ -331,28 +345,28 @@ int main(int argc, char* argv[])
 					};
 					break;
 				default:
-					fprintf(stderr, "Unknown pod type\n");
+					std::cerr << "Unknown pod type" << std::endl;
 					break;
 			}
 
 			if (entry == nullptr) {
-				fprintf(stderr, "Entry is null\n");
+				std::cerr << "Entry is null" << std::endl;
 				return 1;
 			}
 			
 			switch (type) {
 			case POD5:
 				if (pod.pod5->size + data2_size >= 0x7FFFFFFF) {
-					fprintf(stderr, "Archive size exceeds 2GB limit! Saving & splitting archive.\n");
+					std::cout << "Archive size exceeds 2GB limit! Saving & splitting archive." << std::endl;
 					file_count = 0;
 					pods_count++;
 					new_filename = args.file.substr(0, args.file.length() - 4) + to_format(pods_count) + ".POD";
 					if (new_filename.length() >= POD_HEADER_NEXT_ARCHIVE_SIZE) {
-						fprintf(stderr, "Filename too long! Aborting.\n");
+						std::cerr << "Filename too long! Aborting." << std::endl;
 						return 1;
 					}
 					if (pod.pod5->size >= 0x7FFFFFFF) {
-						fprintf(stderr, "File '%s' size exceeds 2GB limit! Aborting.\n", name);
+						std::cerr << "File '" << name << "' size exceeds 2GB limit! Aborting." << std::endl;
 						return 1;
 					}
 
@@ -363,17 +377,17 @@ int main(int argc, char* argv[])
 				}
 				break;
 			case POD6:
-				if (pod.pod6->size + data2_size >= 0x7FFFFFFF) {
-					fprintf(stderr, "Archive size exceeds 2GB limit! Saving & splitting archive.\n");
+				if (pod.pod6->size + data2_size >= 0x77359400) {
+					std::cout << "Archive size exceeds 2GB limit! Saving & splitting archive." << std::endl;
 					file_count = 0;
 					pods_count++;
 					new_filename = args.file.substr(0, args.file.length() - 4) + to_format(pods_count) + ".POD";
 					if (new_filename.length() >= POD_HEADER_NEXT_ARCHIVE_SIZE) {
-						fprintf(stderr, "Filename too long! Aborting.\n");
+						std::cerr << "Filename too long! Aborting." << std::endl;
 						return 1;
 					}
-					if (pod.pod5->size >= 0x7FFFFFFF) {
-						fprintf(stderr, "File '%s' size exceeds 2GB limit! Aborting.\n", name);
+					if (pod.pod6->size >= 0x77359400) {
+						std::cerr << "File '" << name << "' size exceeds 2GB limit! Aborting." << std::endl;
 						return 1;
 					}
 					strcpy(pod.pod6->header->next_archive, new_filename.c_str());
@@ -394,15 +408,16 @@ int main(int argc, char* argv[])
 			delete data2;
 			delete entry;
 
-			fprintf(stderr, "%s -> %s\n", path.c_str(), new_filename.c_str());
+			std::cout << path << " -> " << new_filename << std::endl;
 			file_count++;
 		}
-		
+
 		pod_file_write(pod, (pod_path_t)new_filename.c_str());
 	}
 	else {
 		printHelp();
-		fprintf(stderr, "\nInvalid arguments\n");
+		std::cerr << "Invalid arguments" << std::endl;
+		std::cerr << std::endl;
 		return 1;
 	}
 
