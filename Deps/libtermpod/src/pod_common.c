@@ -6,7 +6,7 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 #define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
+#include <windows.h>
 #include <io.h>
 #define opendir _open
 #define closedir _close
@@ -212,7 +212,11 @@ pod_dir_t pod_opendir_mkdir_p(const pod_string_t path, mode_t* mode)
 	}
 
 	/* open canonicalized file name as directory */
+#if defined(_WIN32) || defined(_WIN64)
+	pod_dir_t dst = opendir(dir, *mode);
+#else
 	pod_dir_t dst = opendir(dir);
+#endif
 	if(dst == NULL)
 	{
 		fprintf(stderr,"ERROR: opendir(\"%s\") failed with errno %s\n", dir, strerror(errno));
