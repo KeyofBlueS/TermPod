@@ -12,14 +12,14 @@ project(libzip
   LANGUAGES C)
 
 option(ENABLE_COMMONCRYPTO "Enable use of CommonCrypto" ON)
-option(ENABLE_GNUTLS "Enable use of GnuTLS" ON)
-option(ENABLE_MBEDTLS "Enable use of mbed TLS" ON)
-option(ENABLE_OPENSSL "Enable use of OpenSSL" ON)
+option(ENABLE_GNUTLS "Enable use of GnuTLS" OFF)
+option(ENABLE_MBEDTLS "Enable use of mbed TLS" OFF)
+option(ENABLE_OPENSSL "Enable use of OpenSSL" OFF)
 option(ENABLE_WINDOWS_CRYPTO "Enable use of Windows cryptography libraries" ON)
 
-option(ENABLE_BZIP2 "Enable use of BZip2" ON)
-option(ENABLE_LZMA "Enable use of LZMA" ON)
-option(ENABLE_ZSTD "Enable use of Zstandard" ON)
+option(ENABLE_BZIP2 "Enable use of BZip2" OFF)
+option(ENABLE_LZMA "Enable use of LZMA" OFF)
+option(ENABLE_ZSTD "Enable use of Zstandard" OFF)
 
 option(ENABLE_FDOPEN "Enable zip_fdopen, which is not allowed in Microsoft CRT secure libraries" ON)
 
@@ -58,7 +58,7 @@ if(WIN32)
   endif()
 endif()
 
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 option(SHARED_LIB_VERSIONNING "Add SO version in .so build" ON)
 
