@@ -108,9 +108,9 @@ Arguments parseArguments(int argc, char* argv[]) {
 int main(int argc, char* argv[])
 {
 #if defined(_WIN32)
-	SetConsoleTitleA("TermPod (By Malte0621)");
+	SetConsoleTitleA("TermPod (By Malte0621) v0.1.0");
 #endif
-	std::cout << "TermPod (By Malte0621)" << std::endl;
+	std::cout << "TermPod (By Malte0621) v0.1.0" << std::endl;
 	
 	// Args override (for debug testing):
 	//argc = 6;
