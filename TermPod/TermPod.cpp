@@ -314,7 +314,7 @@ int main(int argc, char* argv[])
 					};
 					break;
 				case POD6:
-					if (compression_pod6 && buffer.size() >= 1024 && extension != ".smp") {
+					if (compression_pod6 && buffer.size() >= 1024 && extension != ".smp" && extension != ".fxa" && extension != ".fxe") {
 						if (buffer.size() >= 1024 * 4) compressionLevel = 8;
 						else if (buffer.size() >= 1024 * 2) compressionLevel = 4;
 						else if (buffer.size() >= 1024 * 1) compressionLevel = 2;
