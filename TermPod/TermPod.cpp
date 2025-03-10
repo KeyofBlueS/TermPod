@@ -291,16 +291,16 @@ int main(int argc, char* argv[])
 					};
 					break;
 				case POD5:
-					if (buffer.size() >= 1024) {
-						if (buffer.size() >= 1024 * 4) compressionLevel = 8;
-						else if (buffer.size() >= 1024 * 2) compressionLevel = 4;
-						else if (buffer.size() >= 1024 * 1) compressionLevel = 2;
-						else compressionLevel = 1;
-						data2 = pod_compress((pod_byte_t*)data, compressionLevel, (pod_size_t)buffer.size(), (pod_string_t)relative_path.c_str(), &data2_size);
-					}
-					else {
+					//if (buffer.size() >= 1024) {
+						//if (buffer.size() >= 1024 * 4) compressionLevel = 8;
+						//else if (buffer.size() >= 1024 * 2) compressionLevel = 4;
+						//else if (buffer.size() >= 1024 * 1) compressionLevel = 2;
+						//else compressionLevel = 1;
+						//data2 = pod_compress((pod_byte_t*)data, compressionLevel, (pod_size_t)buffer.size(), (pod_string_t)relative_path.c_str(), &data2_size);
+					//}
+					//else {
 						data2_size = buffer.size();
-					}
+					//}
 
 					entry = new pod_entry_pod5_t{
 						.path_offset = (pod_number_t)(pod.pod5->size + POD_DIR_ENTRY_POD5_SIZE + data2_size),
@@ -309,7 +309,8 @@ int main(int argc, char* argv[])
 						.uncompressed = (pod_number_t)buffer.size(),
 						.compression_level = (pod_number_t)(data2 == nullptr ? 0 : compressionLevel),
 						.timestamp = (pod_number_t)timestamp,
-						.checksum = pod_crc((pod_byte_t*)data2, (pod_size_t)buffer.size())
+						//.checksum = pod_crc((pod_byte_t*)data2, (pod_size_t)buffer.size())
+						.checksum = 0xffffffff 
 					};
 					break;
 				case POD6:
