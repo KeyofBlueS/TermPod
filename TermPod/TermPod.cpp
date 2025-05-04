@@ -108,9 +108,9 @@ Arguments parseArguments(int argc, char* argv[]) {
 int main(int argc, char* argv[])
 {
 #if defined(_WIN32)
-	SetConsoleTitleA("TermPod (By Malte0621) v0.2.0");
+	SetConsoleTitleA("TermPod (By Malte0621) v0.3.0");
 #endif
-	std::cout << "TermPod (By Malte0621) v0.2.0" << std::endl;
+	std::cout << "TermPod (By Malte0621) v0.3.0" << std::endl;
 	
 	// Args override (for debug testing):
 	//argc = 6;
@@ -314,11 +314,10 @@ int main(int argc, char* argv[])
 					};
 					break;
 				case POD6:
-					if (compression_pod6 && buffer.size() >= 1024 && extension != ".smp" && extension != ".fxa" && extension != ".fxe") {
-						if (buffer.size() >= 1024 * 4) compressionLevel = 8;
-						else if (buffer.size() >= 1024 * 2) compressionLevel = 4;
-						else if (buffer.size() >= 1024 * 1) compressionLevel = 2;
-						else compressionLevel = 1;
+					if (compression_pod6 && buffer.size() >= 2048 && extension != ".smp" && extension != ".fxa" && extension != ".fxe") {
+						if (buffer.size() >= 2048 * 2) compressionLevel = 8;
+						else if (buffer.size() >= 2048 * 1) compressionLevel = 4;
+						else compressionLevel = 2;
 						data2 = pod_compress((pod_byte_t*)data, compressionLevel, (pod_size_t)buffer.size(), (pod_string_t)relative_path.c_str(), &data2_size);
 					}
 					else {
